@@ -27,14 +27,11 @@ def optimize_route(data):
     """
 
     data = filter_southern_california_data(data)
-    
 
     selected_columns = ['vehicle_gps_latitude', 'vehicle_gps_longitude', 'traffic_congestion_level']
     data = data[selected_columns].dropna()
-    
 
     G = nx.Graph()
-
 
     for i, row in data.iterrows():
         G.add_node(i, pos=(row['vehicle_gps_latitude'], row['vehicle_gps_longitude']))
@@ -44,13 +41,13 @@ def optimize_route(data):
         weight = data.iloc[i]['traffic_congestion_level'] + 1  
         G.add_edge(i, i + 1, weight=weight)
 
-
     start_node = 0
     end_node = len(data) - 1
-    shortest_path = nx.shortest_path(G, source=start_node, target=end_node, weight='weight')
 
+    shortest_path = nx.dijkstra_path(G, source=start_node, target=end_node, weight='weight')
 
     optimized_data = data.iloc[shortest_path].reset_index(drop=True).head(10)  # Limit to top 10 points for visualization
-    print(f"Optimized Path: {shortest_path}")
 
+    print(f"Optimized Path: {shortest_path}")
+    
     return optimized_data
